@@ -68,3 +68,21 @@ app.get('/', (req: Request, res: Response)=>{
     res.send('Done');
 });
 
+app.get('/sync', (req: Request, res: Response) => {
+    var Book = mongoose.model("Books", bookSchema);
+    let stream = (Book as any).synchronize();
+    let count = 0;
+
+    stream.on('data', function(err:any, doc:any) {
+        count++;
+    });
+      
+    stream.on('close', function() {
+        console.log('indexed ' + count + ' documents!');
+    });
+    
+    stream.on('error', function(err:any) {
+        console.log(err);
+    });
+});
+
